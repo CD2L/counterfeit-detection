@@ -1,0 +1,4 @@
+[submodule "pipeline"]
+	path = pipeline
+	url = https://github.com/CD2L/shipping-label-classification-pipeline.git
+	branch = demo

@@ -4,7 +4,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"> 
     <!-- CSS only -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 </head>
 
 <style>
@@ -51,13 +51,19 @@
         <h5 class="card-title">Label Localization</h5>
         <div class="row">
             <div class="col">
-                <img src="{{url_for('static', filename='ll_result.jpg')}}"/>
+                <span class="badge rounded-pill text-bg-primary mb-2">Time : {{"%.2f"|format(times[0])}} ms</span>
             </div>
-            {% for img in ll_dir %}
+        </div>
+        <div class="row">
             <div class="col">
-                <img src="{{url_for('static', filename='ll')}}/{{img}}"/>
+                <img src="{{url_for('static', filename='models_outputs/ll_result.jpg')}}"/>
             </div>
-            {% endfor %}    
+            <div class='col'>
+                <div class='row'><div class='col'><span class='badge bg-danger'>Label </span></div><div class='col'>{{ll_metrics['cls'][0]}}</div></div>
+                <div class='row'><div class='col'><span class='badge bg-warning'>Text </span></div><div class='col'>{{ll_metrics['cls'][1]}}</div></div>
+                <div class='row'><div class='col'><span class='badge bg-info'>Logo </span></div><div class='col'>{{ll_metrics['cls'][2]}}</div></div>
+                <div class='row'><div class='col'><span class='badge bg-primary'>Other </span></div><div class='col'>{{ll_metrics['cls'][3]}}</div></div>
+            </div>
         </div>
         </div>
     </div>
@@ -65,21 +71,32 @@
         <div class="card-body">
             <h5 class="card-title">Redressement</h5>
             <div class="row">
+                <div class="col">
+                    <span class="badge rounded-pill text-bg-primary mb-2">Time : {{"%.2f"|format(times[1])}} ms</span>
+                </div>
+            </div>    
+            <div class="row">
                 {% for img in redress_dir %}
                 <div class="col img">
-                    <img src="{{url_for('static', filename='redress')}}/{{img}}"/>
+                    <img src="{{url_for('static', filename='models_outputs/redress')}}/{{img}}"/>
                 </div>
                 {% endfor %}
             </div>
         </div>
     </div>
+    {% if yolo_dir is defined %}
     <div class="yolo card" style="width: 18rem;">
         <div class="card-body">
             <h5 class="card-title">Yolov5</h5>
             <div class="row">
+                <div class="col">
+                    <span class="badge rounded-pill text-bg-primary mb-2">Time : {{"%.2f"|format(times[2])}} ms</span>
+                </div>
+            </div>    
+            <div class="row">
                 {% for img in yolo_dir %}
                 <div class="col">
-                    <img src="{{url_for('static', filename='ocr')}}/{{img}}"/>
+                    <img src="{{url_for('static', filename='models_outputs/ocr')}}/{{img}}"/>
                 </div>
                 {% endfor %}
             </div>
@@ -92,6 +109,7 @@
         <div class="row">
             <div class="col">
                 <span class="badge rounded-pill text-bg-danger mb-2">Number of blocks : {{ocr_dir|length}}</span>
+                <span class="badge rounded-pill text-bg-primary mb-2">Time : {{"%.2f"|format(times[3])}} ms</span>
             </div>
         </div>
         <table class="table">
@@ -114,18 +132,26 @@
     </div>
     <div class="addr_idt card" style="width: 18rem;">
         <div class="card-body">
+            <h5 class="card-title">Address identification</h5>
+            <div class="row">
+                <div class="col">
+                    <span class="badge rounded-pill text-bg-primary mb-2">Time : {{"%.2f"|format(times[4])}} ms</span>
+                </div>
+            </div>    
             <table class="table">
                 <thead>
                   <tr>
                     <th scope="col">id</th>
                     <th scope="col">Text</th>
+                    <th scope="col">Conf</th>
                 </tr>
                 </thead>
                 <tbody>
-                    {% for txt in addr_lst %}
+                    {% for txt in all_txt %}
                     <tr>
                         <td>{{loop.index}}</td>
                         <td>{{txt}}</td>
+                        <td>{{"%.2f"|format(idt_metrics['scores'][loop.index-1])}} %</td>
                     </tr>
                     {% endfor %}    
                 </tbody>
@@ -135,6 +161,12 @@
     <div class="addr_clf card" style="width: 18rem;">
         <div class="card-body">
         <h5 class="card-title">Addr clf</h5>
+        <div class="row">
+            <div class="col">
+                <span class="badge rounded-pill text-bg-primary mb-2">Time : {{"%.2f"|format(times[5])}} ms</span>
+                <span class="badge rounded-pill text-bg-warning mb-2">Total time : {{"%.2f"|format(times|sum())}} ms</span>
+            </div>
+        </div>
         <table class="table">
             <thead>
               <tr>
@@ -145,7 +177,7 @@
             </tr>
             </thead>
             <tbody>
-                {% for txt,     result in out %}
+                {% for txt, result in out %}
                 <tr>
                     <td>{{loop.index}}</td>
                     <td>{{txt}}</td>
@@ -159,5 +191,6 @@
             </tbody>
         </table>    
     </div>
+    {% endif %}
 </div>
 </body>
